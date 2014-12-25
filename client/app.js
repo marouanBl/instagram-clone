@@ -1,9 +1,13 @@
-angular
-  .module('Instagram', [
-    'ngRoute',
-    'ngMessages'
-  ])
-  .config(function ($routeProvider) {
+(function () {
+
+  angular
+    .module('Instagram', [
+      'ngRoute',
+      'ngMessages'
+    ])
+    .config(config);
+
+  function config($routeProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -22,4 +26,6 @@ angular
         controller: 'DetailCtrl'
       })
       .otherwise('/');
-  });
+  }
+
+})();
