@@ -5,8 +5,10 @@
     .controller('Home', Home);
 
   function Home($rootScope, $window, $auth) {
-    this.isAuthenticated = isAuthenticated;
-    this.linkInstagram = linkInstagram;
+    var vm = this;
+
+    vm.isAuthenticated = isAuthenticated;
+    vm.linkInstagram = linkInstagram;
 
     /////////////////////////
 
