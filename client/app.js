@@ -12,19 +12,23 @@
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
-        controller: 'HomeCtrl'
+        controller: 'Home',
+        controllerAs: 'Home'
       })
       .when('/login', {
         templateUrl: 'views/login.html',
-        controller: 'LoginCtrl'
+        controller: 'Login',
+        controllerAs: 'Login'
       })
       .when('/signup', {
         templateUrl: 'views/signup.html',
-        controller: 'SignupCtrl'
+        controller: 'Signup',
+        controllerAs: 'Signup'
       })
       .when('/photo/:id', {
         templateUrl: 'views/detail.html',
-        controller: 'DetailCtrl'
+        controller: 'Detail',
+        controllerAs: 'Detail'
       })
       .otherwise('/');
 
@@ -35,7 +39,7 @@
       name: 'instagram',
       url: 'http://localhost:3000/auth/instagram',
       redirectUri: 'http://localhost:8000',
-      clientId: '799d1f8ea0e44ac8b70e7f18fcacedd1',
+      clientId: 'b33646c8fd7e4a7eb5ef216ed555bc89',
       requiredUrlParams: ['scope'],
       scope: ['likes'],
       scopeDelimiter: '+',
