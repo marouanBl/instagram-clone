@@ -20,10 +20,7 @@
      */
     function instagramLogin() {
       $auth.authenticate('instagram')
-        .then(function (res) {
-          $window.localStorage.currentUser = JSON.stringify(res.data.user);
-          $rootScope.currentUser = JSON.stringify($window.localStorage.currentUser);
-        })
+        .then(successLoginHandler)
         .catch(function (res) {
           console.log(res.data);
         });
@@ -34,10 +31,7 @@
      */
     function emailLogin() {
       $auth.login({ email: vm.email, password: vm.password })
-        .then(function (res) {
-          $window.localStorage.currentUser = JSON.stringify(res.data.user);
-          $rootScope.currentUser = JSON.stringify($window.localStorage.currentUser);
-        })
+        .then(successLoginHandler)
         .catch(function (res) {
           vm.errorMessage = {};
 
@@ -46,7 +40,15 @@
             vm.errorMessage[field] = res.data.message[field];
           })
         });
+    }
 
+    /**
+     * Handles successful login.
+     * @param res
+     */
+    function successLoginHandler(res) {
+      $window.localStorage.currentUser = JSON.stringify(res.data.user);
+      $rootScope.currentUser = JSON.stringify($window.localStorage.currentUser);
     }
   }
 
