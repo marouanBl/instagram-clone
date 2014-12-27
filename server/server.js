@@ -10,6 +10,20 @@ var request = require('request');
 
 var app = express();
 
+var config = require('./config');
+
+var User = mongoose.model('User', new mongoose.Schema({
+  instagramId: { type: String, index: true },
+  email: { type: String, unique: true, lowercase: true },
+  password: { type: String, select: false },
+  username: String,
+  fullName: String,
+  picture: String,
+  accessToken: String
+}));
+
+mongoose.connect(config.db);
+
 app.set('port', process.env.PORT || 3000);
 app.use(cors());
 app.use(bodyParser.json());
