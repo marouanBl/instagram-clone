@@ -118,6 +118,81 @@ app.post('/auth/login', function (req, res) {
   });
 });
 
+app.post('/auth/instagram', function (req, res) {
+  var accessTokenUrl = 'https://api.instagram.com/oauth/access_token';
+
+  var params = {
+    client_id: req.body.clientId,
+    redirect_uri: req.body.redirectUri,
+    client_secret: config.clientSecret,
+    code: req.body.code,
+    grant_type: 'authorization_code'
+  };
+
+  // Step 1: Exchange authorization code for access token
+  request.post({ url: accessTokenUrl, form: params, json: true }, function (e, r, body) {
+    if (req.headers.authorization) {
+      // Step 2a. Link user accounts
+      User.findOne({ instagramId: body.user.id }, function (err, existingUser) {
+
+        var token = req.headers.authorization.split(' ');
+        var payload = jwt.decode(token, config.tokenSecret);
+
+        User.findById(payload.sub, '+password', function (err, localUser) {
+          if (!localUser)
+            return res.status(400).send({ message: 'User not found.' });
+
+          if (existingUser) {
+            // Merge two accounts
+            existingUser.email = localUser.email;
+            existingUser.password = localUser.password;
+
+            localUser.remove();
+
+            existingUser.save(function () {
+              return res.send({ token: createToken(existingUser), user: existingUser });
+            });
+
+          } else {
+            // Link current email account with the Instagram profile information
+            localUser.instagramId = body.user.id;
+            localUser.username = body.user.username;
+            localUser.fullName = body.user.full_name;
+            localUser.picture = body.user.profile_picture;
+            localUser.accessToken = body.access_token;
+
+            localUser.save(function () {
+              return res.send({ token: createToken(localUser), user: localUser });
+            });
+          }
+        });
+
+      });
+
+    } else {
+      // Step 2b. Create a new user account or return an existing one
+      User.findOne({ instagramId: body.user.id }, function (err, existingUser) {
+        if (existingUser)
+          return res.send({ token: createToken(existingUser), user: existingUser });
+
+        var user = new User({
+          instagramId: body.user.id,
+          username: body.user.username,
+          fullName: body.user.full_name,
+          picture: body.user.profile_picture,
+          accessToken: body.access_token
+        });
+
+        user.save(function () {
+          return res.send({ token: createToken(user), user: user });
+        })
+
+      });
+    }
+  });
+
+});
+
 app.listen(app.get('port'), function () {
   console.log('Express server listening on port', app.get('port'));
 });
